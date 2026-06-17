@@ -1,74 +1,82 @@
-# GitHub Repository Tracker
-
-## Overview
-
+GitHub Repository Tracker
 A FastAPI application that tracks GitHub repositories and stores repository metadata in PostgreSQL.
+Features
 
-## Features
+Add GitHub repositories
+Fetch repository metadata from the GitHub API
+Store data in PostgreSQL
+Update repository information
+Delete repositories
+List repositories with pagination
+Custom exception handling
 
-- Add GitHub repositories
-- Fetch repository metadata from GitHub API
-- Store data in PostgreSQL
-- Update repository information
-- Delete repositories
-- List repositories
-- Pagination support
-- Custom exception handling
+Tech Stack
 
-## Tech Stack
+FastAPI
+PostgreSQL
+SQLAlchemy (async)
+Pydantic
+HTTPX
 
-- FastAPI
-- PostgreSQL
-- SQLAlchemy Async
-- Pydantic
-- HTTPX
+Prerequisites
 
-## Installation
+Python 3.10+
+PostgreSQL 13+ (running locally or accessible remotely)
+A PostgreSQL database created for this project
 
-### Clone Repository
-
-git clone <repository-url>
-
-### Create Virtual Environment
-
-python -m venv venv
-
-### Activate Virtual Environment
-
+Installation
+1. Clone the repository
+bashgit clone <repository-url>
+cd github-repository-tracker
+2. Create and activate a virtual environment
+Windows:
+bashpython -m venv venv
 venv\Scripts\activate
-
-### Install Dependencies
-
-pip install -r requirements.txt
-
-### Configure Environment Variables
-
-Create a .env file:
-
-DATABASE_URL=postgresql+asyncpg://username:password@localhost:5432/github_tracker
-
+macOS/Linux:
+bashpython -m venv venv
+source venv/bin/activate
+3. Install dependencies
+bashpip install -r requirements.txt
+4. Configure environment variables
+Create a .env file in the project root:
+envDATABASE_URL=postgresql+asyncpg://username:password@localhost:5432/github_tracker
 GITHUB_API_BASE=https://api.github.com
-
 REQUEST_TIMEOUT=30
-
-### Run Application
-
-uvicorn app.main:app --reload
-
-## API Endpoints
-
-POST /repositories
-
-GET /repositories
-
-GET /repositories/{id}
-
-PUT /repositories/{id}
-
-DELETE /repositories/{id}
-
-## Documentation
-
-Swagger UI:
-
+No GitHub authentication token is required — the app calls the public GitHub API unauthenticated. Note that unauthenticated requests are subject to GitHub's lower rate limit (60 requests/hour per IP), so heavy use may hit that limit.
+5. Run database migrations (if applicable)
+bashalembic upgrade head
+6. Run the application
+bashuvicorn app.main:app --reload
+The API will be available at http://127.0.0.1:8000.
+API Endpoints
+MethodEndpointDescriptionPOST/repositoriesAdd a new repository and fetch its metadata from GitHubGET/repositoriesList tracked repositories (supports pagination)GET/repositories/{id}Get a single repository by IDPUT/repositories/{id}Update repository informationDELETE/repositories/{id}Delete a repository
+Example: Add a repository
+bashcurl -X POST http://127.0.0.1:8000/repositories \
+  -H "Content-Type: application/json" \
+  -d '{"owner": "fastapi", "name": "fastapi"}'
+Response:
+json{
+  "id": 1,
+  "owner": "fastapi",
+  "name": "fastapi",
+  "stars": 75000,
+  "forks": 6400,
+  "language": "Python",
+  "created_at": "2026-06-17T10:00:00Z"
+}
+Example: List repositories with pagination
+bashcurl "http://127.0.0.1:8000/repositories?skip=0&limit=10"
+Error Responses
+The API returns structured error responses for invalid input or failures, e.g.:
+json{
+  "detail": "Repository not found"
+}
+Documentation
+Interactive API documentation (Swagger UI) is available once the app is running:
 http://127.0.0.1:8000/docs
+Alternative ReDoc documentation:
+http://127.0.0.1:8000/redoc
+Testing
+No automated test suite yet. Contributions adding pytest coverage are welcome.
+License
+This project is licensed under the MIT License.
