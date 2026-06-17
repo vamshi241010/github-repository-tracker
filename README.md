@@ -32,6 +32,7 @@ A FastAPI application that tracks GitHub repositories and stores repository meta
 ### 1. Clone the repository
 
 git clone https://github.com/vamshi241010/github-repository-tracker.git
+
 cd github-repository-tracker
 
 ### 2. Create and activate a virtual environment
