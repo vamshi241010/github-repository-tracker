@@ -4,13 +4,14 @@ A FastAPI application that tracks GitHub repositories and stores repository meta
 
 ## Features
 
-- Add GitHub repositories
-- Fetch repository metadata from the GitHub API
-- Store data in PostgreSQL
-- Update repository information
-- Delete repositories
-- List repositories with pagination
+- CRUD operations for GitHub repositories
+- GitHub API integration
+- PostgreSQL persistence
+- Async SQLAlchemy
+- Pagination support
+- Duplicate repository detection
 - Custom exception handling
+- OpenAPI/Swagger documentation
 
 ## Tech Stack
 
@@ -30,7 +31,7 @@ A FastAPI application that tracks GitHub repositories and stores repository meta
 
 ### 1. Clone the repository
 
-git clone https://github.com/vamshi241010/github-repository-tracker/
+git clone https://github.com/vamshi241010/github-repository-tracker.git
 cd github-repository-tracker
 
 ### 2. Create and activate a virtual environment
@@ -57,13 +58,38 @@ GITHUB_API_BASE=https://api.github.com
 
 REQUEST_TIMEOUT=30
 
+## Environment Variables
+
+| Variable | Description |
+|-----------|-------------|
+| DATABASE_URL | PostgreSQL connection string |
+| GITHUB_API_BASE | GitHub API base URL |
+| REQUEST_TIMEOUT | HTTP request timeout in seconds |
+
 No GitHub authentication token is required — the app calls the public GitHub API unauthenticated. Note that unauthenticated requests are subject to GitHub's lower rate limit (60 requests/hour per IP), so heavy use may hit that limit.
 
-### 5. Run database migrations (if applicable)
+## Project Structure
 
-alembic upgrade head
+app/
+├── api/
+├── core/
+├── db/
+├── models/
+├── repositories/
+├── schemas/
+├── services/
 
-### 6. Run the application
+### Architecture
+
+Route Layer
+↓
+Service Layer
+↓
+Repository Layer
+↓
+Database
+
+### 5. Run the application
 
 uvicorn app.main:app --reload
 
@@ -81,22 +107,27 @@ The API will be available at http://127.0.0.1:8000.
 
 ### Example: Add a repository
 
-curl -X POST http://127.0.0.1:8000/repositories -H "Content-Type: application/json" -d '{"owner": "fastapi", "name": "fastapi"}'
+curl -X POST http://127.0.0.1:8000/repositories \
+-H "Content-Type: application/json" \
+-d '{"url":"https://github.com/fastapi/fastapi"}'
 
 Response:
 {
   "id": 1,
+  "github_id": 160919119,
   "owner": "fastapi",
-  "name": "fastapi",
-  "stars": 75000,
-  "forks": 6400,
+  "repo_name": "fastapi",
+  "full_name": "fastapi/fastapi",
+  "description": "...",
+  "stars": 85000,
+  "forks": 7000,
   "language": "Python",
-  "created_at": "2026-06-17T10:00:00Z"
+  "html_url": "https://github.com/fastapi/fastapi"
 }
 
 ### Example: List repositories with pagination
 
-curl "http://127.0.0.1:8000/repositories?skip=0&limit=10"
+curl "http://127.0.0.1:8000/repositories?page=1&size=10"
 
 ### Error Responses
 
