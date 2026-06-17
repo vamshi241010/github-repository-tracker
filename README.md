@@ -52,7 +52,9 @@ pip install -r requirements.txt
 Create a .env file in the project root:
 
 DATABASE_URL=postgresql+asyncpg://username:password@localhost:5432/github_tracker
+
 GITHUB_API_BASE=https://api.github.com
+
 REQUEST_TIMEOUT=30
 
 No GitHub authentication token is required — the app calls the public GitHub API unauthenticated. Note that unauthenticated requests are subject to GitHub's lower rate limit (60 requests/hour per IP), so heavy use may hit that limit.
